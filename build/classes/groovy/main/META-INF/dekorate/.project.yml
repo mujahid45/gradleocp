@@ -1,0 +1,17 @@
+---
+root: "file:///tmp/jak/dekorate/examples/spring-boot-with-gradle-on-openshift-example/"
+dekorateInputDir: null
+dekorateOutputDir: "META-INF/dekorate"
+buildInfo:
+  name: "spring-boot-with-gradle-on-openshift-example"
+  version: "0.0.1-SNAPSHOT"
+  packaging: "jar"
+  buildTool: "gradle"
+  outputFile: "file:///tmp/jak/dekorate/examples/spring-boot-with-gradle-on-openshift-example/build/libs/spring-boot-with-gradle-on-openshift-example-0.0.1-SNAPSHOT.jar"
+  classOutputDir: "file:///tmp/jak/dekorate/examples/spring-boot-with-gradle-on-openshift-example/build/classes/groovy/main/"
+  resourceDir: "file:///tmp/jak/dekorate/examples/spring-boot-with-gradle-on-openshift-example/src/main/resources"
+scmInfo:
+  root: "file:///tmp/jak/dekorate/"
+  url: "https://github.com/mujahid45/dekorate.git"
+  branch: "master"
+  commit: ""

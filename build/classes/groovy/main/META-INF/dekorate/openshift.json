@@ -1,0 +1,166 @@
+{
+  "apiVersion" : "v1",
+  "kind" : "Service",
+  "metadata" : {
+    "labels" : {
+      "app" : "spring-boot-with-gradle-on-openshift-example",
+      "version" : "0.0.1-SNAPSHOT",
+      "group" : "root"
+    },
+    "name" : "spring-boot-with-gradle-on-openshift-example"
+  },
+  "spec" : {
+    "ports" : [ {
+      "name" : "http",
+      "port" : 8080,
+      "targetPort" : 8080
+    } ],
+    "selector" : {
+      "app" : "spring-boot-with-gradle-on-openshift-example",
+      "version" : "0.0.1-SNAPSHOT",
+      "group" : "root"
+    },
+    "type" : "ClusterIP"
+  }
+}{
+  "apiVersion" : "image.openshift.io/v1",
+  "kind" : "ImageStream",
+  "metadata" : {
+    "labels" : {
+      "app" : "spring-boot-with-gradle-on-openshift-example",
+      "version" : "0.0.1-SNAPSHOT",
+      "group" : "root"
+    },
+    "name" : "s2i-java"
+  },
+  "spec" : {
+    "dockerImageRepository" : "fabric8/s2i-java"
+  }
+}{
+  "apiVersion" : "image.openshift.io/v1",
+  "kind" : "ImageStream",
+  "metadata" : {
+    "labels" : {
+      "app" : "spring-boot-with-gradle-on-openshift-example",
+      "version" : "0.0.1-SNAPSHOT",
+      "group" : "root"
+    },
+    "name" : "spring-boot-with-gradle-on-openshift-example"
+  }
+}{
+  "apiVersion" : "build.openshift.io/v1",
+  "kind" : "BuildConfig",
+  "metadata" : {
+    "labels" : {
+      "app" : "spring-boot-with-gradle-on-openshift-example",
+      "version" : "0.0.1-SNAPSHOT",
+      "group" : "root"
+    },
+    "name" : "spring-boot-with-gradle-on-openshift-example"
+  },
+  "spec" : {
+    "output" : {
+      "to" : {
+        "kind" : "ImageStreamTag",
+        "name" : "spring-boot-with-gradle-on-openshift-example:0.0.1-SNAPSHOT"
+      }
+    },
+    "source" : {
+      "binary" : { }
+    },
+    "strategy" : {
+      "sourceStrategy" : {
+        "from" : {
+          "kind" : "ImageStreamTag",
+          "name" : "s2i-java:2.3"
+        }
+      }
+    }
+  }
+}{
+  "apiVersion" : "apps.openshift.io/v1",
+  "kind" : "DeploymentConfig",
+  "metadata" : {
+    "labels" : {
+      "app" : "spring-boot-with-gradle-on-openshift-example",
+      "version" : "0.0.1-SNAPSHOT",
+      "group" : "root"
+    },
+    "name" : "spring-boot-with-gradle-on-openshift-example"
+  },
+  "spec" : {
+    "replicas" : 1,
+    "selector" : {
+      "app" : "spring-boot-with-gradle-on-openshift-example",
+      "version" : "0.0.1-SNAPSHOT",
+      "group" : "root"
+    },
+    "template" : {
+      "metadata" : {
+        "labels" : {
+          "app" : "spring-boot-with-gradle-on-openshift-example",
+          "version" : "0.0.1-SNAPSHOT",
+          "group" : "root"
+        }
+      },
+      "spec" : {
+        "containers" : [ {
+          "env" : [ {
+            "name" : "KUBERNETES_NAMESPACE",
+            "valueFrom" : {
+              "fieldRef" : {
+                "fieldPath" : "metadata.namespace"
+              }
+            }
+          }, {
+            "name" : "JAVA_APP_JAR",
+            "value" : "/deployments/spring-boot-with-gradle-on-openshift-example-0.0.1-SNAPSHOT.jar"
+          } ],
+          "image" : "",
+          "imagePullPolicy" : "IfNotPresent",
+          "livenessProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/actuator/info",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 0,
+            "periodSeconds" : 30,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 10
+          },
+          "name" : "spring-boot-with-gradle-on-openshift-example",
+          "ports" : [ {
+            "containerPort" : 8080,
+            "name" : "http",
+            "protocol" : "TCP"
+          } ],
+          "readinessProbe" : {
+            "failureThreshold" : 3,
+            "httpGet" : {
+              "path" : "/actuator/health",
+              "port" : 8080,
+              "scheme" : "HTTP"
+            },
+            "initialDelaySeconds" : 0,
+            "periodSeconds" : 30,
+            "successThreshold" : 1,
+            "timeoutSeconds" : 10
+          }
+        } ]
+      }
+    },
+    "triggers" : [ {
+      "imageChangeParams" : {
+        "automatic" : true,
+        "containerNames" : [ "spring-boot-with-gradle-on-openshift-example" ],
+        "from" : {
+          "kind" : "ImageStreamTag",
+          "name" : "spring-boot-with-gradle-on-openshift-example:0.0.1-SNAPSHOT"
+        }
+      },
+      "type" : "ImageChange"
+    } ]
+  }
+}

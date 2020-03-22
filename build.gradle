@@ -1,0 +1,59 @@
+buildscript {
+  ext {
+    springBootVersion = '2.1.1.RELEASE'
+    aptPluginVersion = '0.19'
+    dekorateVersion = System.getProperty("dekorateVersion", "0.10.0")
+    junitVersion = '5.3.1'
+    junitGraldePluginVersion = '1.1.0'
+  }
+  repositories {
+    mavenCentral()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    classpath("net.ltgt.gradle:gradle-apt-plugin:${aptPluginVersion}")
+    classpath("org.junit.platform:junit-platform-gradle-plugin:${junitGraldePluginVersion}")
+
+  }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: "net.ltgt.apt"
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+group = 'io.dekorate.examples'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+compileGroovy {
+  groovyOptions.javaAnnotationProcessing = true
+}
+
+junitPlatform {
+    enableStandardTestTask = true
+}
+
+dependencies {
+  implementation('org.springframework.boot:spring-boot-starter-web')
+  implementation('org.springframework.boot:spring-boot-starter-actuator')
+  implementation('org.codehaus.groovy:groovy')
+
+  compile("io.dekorate:openshift-spring-starter:${dekorateVersion}")
+  annotationProcessor("io.dekorate:openshift-annotations:${dekorateVersion}")
+  annotationProcessor("io.dekorate:dekorate-spring-boot:${dekorateVersion}")
+  annotationProcessor('org.springframework.boot:spring-boot-starter-actuator') //We need `dekorate` to see the actuator classes
+
+  testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+  testImplementation("io.dekorate:openshift-junit:${dekorateVersion}")
+}
